@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eo pipefail
+disk_size=$1
+if [ -z "${disk_size}" ]; then
+	echo "Usage: ${0} 'disk_size(MB)'"
+fi
+
+volume_name="ramdisk"
+mount_point=/Volumes/${volume_name}
+test -e ${mount_point}/.device && exit 1
+
+NUMSECTORS=$(expr $disk_size '*' 1024 '*' 1024 '/' 512) # A sector is 512 bytes.
+mydev=`hdiutil attach -nomount ram://$NUMSECTORS`
+diskutil partitionDisk ${mydev} 1 GPTFormat APFS ${volume_name} '100%'
+echo $mydev > ${mount_point}/.device

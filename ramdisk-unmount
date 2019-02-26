@@ -1,0 +1,7 @@
+#!/bin/sh
+set -euo pipefail
+volume_name="ramdisk"
+mount_point=/Volumes/${volume_name}
+device=$(cat ${mount_point}/.device)
+diskutil unmountDisk ${device}
+hdiutil detach ${device}
